@@ -15,6 +15,7 @@ section{
 }
 button{
     margin-right: 10px;
+    margin-bottom: 20px;
     padding: 10px 15px;
     cursor: pointer;
 }
