@@ -34,10 +34,10 @@ const clientList = document.getElementById("clientList");
 // INITIAL RENDER
 
 // Render or Display sessions
-renderSession();
+renderSessions();
 
 // Render or Display freelance clients
-renderClient();
+renderClients();
 
 // EVENTS
 // session system
@@ -56,7 +56,7 @@ function startSession(){
 
     sessions.push(newSession);
     localStorage.setItem("sessions", JSON.stringify(sessions));
-    renderSession();
+    renderSessions();
 }
 
 function finishSession(){
@@ -67,7 +67,7 @@ function finishSession(){
 
     sessions[sessions.length - 1].endTime = new Date().toLocaleString();
     localStorage.setItem("sessions", JSON.stringify(sessions));
-    renderSession();
+    renderSessions();
 }
 
 // Freelance Client Sysytem
@@ -93,12 +93,12 @@ function submitClient(event){
     localStorage.setItem("clients", JSON.stringify(clients));
 
     clientForm.reset();
-    renderClient();
+    renderClients();
 }
 
 // RENDER/DISPLAY TO UI(HTML)
 // Render/Dislay Sessions
-function renderSession(){
+function renderSessions(){
     
     sessionList.innerHTML = "";
 
@@ -117,13 +117,64 @@ function renderSession(){
 }
 
 // Render/Dislay Clients
-function renderClient(){
+function renderClients(){
     clientList.innerHTML = "";
 
     clients.forEach((client, index)=>{
+
         const li = document.createElement("li");
 
-        li.textContent = `Name: ${client.name}, Email: ${client.email}, Price: ${client.price}`
+        // Create and Read
+        const text = document.createElement("span")
+        text.textContent = `Name: ${client.name}, Email: ${client.email}, Price: ${client.price}`
+
+        // Update Client
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit";
+        editBtn.addEventListener("click", function(){
+            editClient(index);
+        });
+
+        // Delete Client
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "Delete";
+        deleteBtn.addEventListener("click", function(){
+            deleteClient(index)
+        });
+
+        li.appendChild(text);
+        li.appendChild(editBtn);
+        li.appendChild(deleteBtn);
+
         clientList.appendChild(li);
     });
+}
+
+// Edit Logic/Function
+function editClient(index){
+    const client = clients[index];
+    
+    const newName = prompt(`Edit name: ${clientName}`);
+    const newEmail = prompt(`Edit email: ${clientEmail}`);
+    const newPrice = prompt(`Edit price: ${clientPrice}`);
+
+    if(!newName || !newEmail || !newPrice){
+        alert("Edit cancelled or Invalid Input")
+        return; // exit App
+    }
+
+    client.name = newName;
+    client.email = newEmail;
+    client.price = newPrice;
+
+    localStorage.setItem("clients", JSON.stringify(clients));
+    renderClients();
+}
+
+// Delete Logic/Function
+function deleteClient(index){
+
+    clients.splice(index, 1);
+    localStorage.setItem("clients", JSON.stringify(clients));
+    renderClients();
 }
