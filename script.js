@@ -1,5 +1,13 @@
-// STATE (Single source of truth)
-let sessionStarted = false;
+
+// STATE (Many source of truths)
+let sessions = [];
+
+const savedSessions = localStorage.getItem("sessions");
+const sessionList = document.getElementById("sessionList")
+
+if(savedSessions){
+    sessions = JSON.parse(savedSessions);
+}
 
 // LOAD STATE FROM LOCAL STORAGE
 if(localStorage.getItem("sessionStarted") === "true"){
@@ -18,30 +26,43 @@ render();
 startBtn.addEventListener("click",startSession);
 finishBtn.addEventListener("click", finishSession);
 
-// FUNCTIONS
+// FUNCTIONS/LOGIC
 function startSession(){
-    sessionStarted = true;
-    localStorage.setItem("sessionStarted","true")
+    const newSession = {
+        startTime: new Date().toLocaleString()
+    };
+
+    sessions.push(newSession);
+    localStorage.setItem("sessions", JSON.stringify(sessions));
     render();
 }
 
 function finishSession(){
-    if(sessionStarted === false){
-        alert("You must start first.")
+    if(sessions.length === 0){
+        alert("No session to finish");
         return;
     }
 
-    sessionStarted = false
-    localStorage.removeItem("sessionStarted")
+    sessions[sessions.length - 1].endTime = new Date().toLocaleString();
+    localStorage.setItem("sessions", JSON.stringify(sessions));
     render();
-
-   // statusText.textContent = "Status: Session Completed 🎯"
 }
 
 function render(){
-    if(sessionStarted){
-        statusText.textContent = "Status: Coding in progress";
-    }else{
-        statusText.textContent = "Status: Not started"
-    }
+    
+    sessionList.innerHTML = "";
+
+    sessions.forEach((session,index)=>{
+        const li = document.createElement("li");
+
+        if(session.endTime){
+            li.textContent = `Session ${index + 1}: ${session.startTime} → ${session.endTime}`;
+
+        }else{
+            li.textContent = `Session ${index + 1}: ${session.startTime} (in progress)`;
+        }
+
+        sessionList.appendChild(li);
+    });
+
 }
